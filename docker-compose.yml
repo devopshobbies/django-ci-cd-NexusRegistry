@@ -7,10 +7,13 @@ networks:
 volumes:
   traefik-acme:
     name: traefik-acme
+  nexus-data:
+    name: nexus-data
 
 services:
   traefik:
     image: traefik:v2.4.8
+    container_name: traefik
     restart: always
     command:
       - "--log.level=INFO"
@@ -60,4 +63,38 @@ services:
       - "traefik.http.routers.traefik-secure.tls.options=default"
       - "traefik.http.routers.traefik-secure.tls.certresolver=mycert"
       - "traefik.http.services.traefik.loadbalancer.server.port=8080"
-
+    
+  nexus:
+    image: sonatype/nexus3:3.34.1
+    container_name: nexus 
+    restart: always
+    volumes:
+      - "nexus-data:/sonatype-work"
+    networks:
+      - default
+    labels:
+     - "traefik.enable=true"
+     - "traefik.docker.network=web_net"
+     - "traefik.http.routers.repo.entrypoints=http"
+     - "traefik.http.routers.repo.rule=Host(`registry.devopshobbies.com`)"
+     - "traefik.http.routers.repo.service=repo-secure"
+     - "traefik.http.routers.repo.middlewares=https-redirect"
+     - "traefik.http.routers.repo-secure.entrypoints=https"
+     - "traefik.http.routers.repo-secure.rule=Host(`registry.devopshobbies.com`)"
+     - "traefik.http.routers.repo-secure.tls=true"
+     - "traefik.http.routers.repo-secure.tls.options=default"
+     - "traefik.http.routers.repo-secure.tls.certresolver=mycert"
+     - "traefik.http.routers.repo-secure.service=repo-secure"
+     - "traefik.http.services.repo-secure.loadbalancer.server.port=8081"
+     - "traefik.http.routers.nexusdocker.entrypoints=http"
+     - "traefik.http.routers.nexusdocker.rule=Host(`docker.devopshobbies.com`)"
+     - "traefik.http.routers.nexusdocker.middlewares=https-redirect"
+     - "traefik.http.routers.nexusdocker-secure.entrypoints=https"
+     - "traefik.http.routers.nexusdocker.service=nexusdocker-secure"
+     - "traefik.http.routers.nexusdocker-secure.rule=Host(`docker.devopshobbies.com`)"
+     - "traefik.http.routers.nexusdocker-secure.tls=true"
+     - "traefik.http.routers.nexusdocker-secure.tls.options=default"
+     - "traefik.http.routers.nexusdocker-secure.tls.certresolver=mycert"
+     - "traefik.http.routers.nexusdocker-secure.service=nexusdocker-secure"
+     - "traefik.http.services.nexusdocker-secure.loadbalancer.server.port=8085"
+   
