@@ -12,6 +12,7 @@ SSH_PORT=1242
 BAC_DIR=/opt/backup/files_$NOW
 # docker config destination
 DOCKER_DEST=/etc/systemd/system/docker.service.d/
+MIRROR_REGISTRY=https://docker.jamko.ir
 #-------------------------------------------------------------
 
 echo "Info: ------------------------------------"
@@ -312,6 +313,7 @@ fi
 cat <<EOT > /etc/systemd/system/docker.service.d/override.conf
 [Service]
 ExecStart=
+ExecStart=/usr/bin/dockerd --registry-mirror $MIRROR_REGISTRY --log-opt max-size=500m --log-opt max-file=5
 EOT
 cat /etc/systemd/system/docker.service.d/override.conf
 {
