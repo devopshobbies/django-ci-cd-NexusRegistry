@@ -11,7 +11,7 @@ volumes:
 services:
   traefik:
     image: traefik:v2.4.8
-    commands:
+    command:
       - "--log.level=INFO"
       - "--log.filepath=/log-file.log"
       - "--log.format=json"
