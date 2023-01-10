@@ -1,0 +1,59 @@
+version: '3.4'
+
+networks:
+  default:
+    name: web_net
+
+volumes:
+  traefik-acme:
+    name: traefik-acme
+
+services:
+  traefik:
+    image: traefik:v2.4.8
+    commands:
+      - "--log.level=INFO"
+      - "--log.filepath=/log-file.log"
+      - "--log.format=json"
+      - "--api=true"
+      - "--ping=true"
+      - "--accesslog=true"
+      - "--accesslog.bufferingsize=100"
+      - "--api.insecure=true"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=web_net"
+      - "--entrypoints.http.address=:80"
+      - "--entrypoints.https.address=:443"
+
+      - "--certificatesresolvers.mycert.acme.email=amirbahador.pv@gmail.com"
+      - "--certificatesresolvers.mycert.acme.storage=/acme/acme.json"
+      - "--certificatesresolvers.mycert.acme.tlschallenge=true"
+
+      - "--providers.file.filename=/traefik/config.yml"
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-acme:/acme
+      - ./traefik:/traefik
+    networks:
+      - default
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=web_net"
+      - "traefik.http.routers.traefik.entrypoints=http"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.devopshobbies.com`)"
+      - "traefik.http.routers.traefik.middlewares=https-redirect"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.web-auth.basicauth.users=admin:{SHA}cQ4sq6qS1Y1OnD0mugO+z1j8KOE="
+      - "traefik.http.routers.traefik-secure.middlewares=web-auth"
+      - "traefik.http.routers.traefik-secure.entrypoints=https"
+      - "traefik.http.routers.traefik-secure.rule=Host(`traefik.devopshobbies.com`)"
+      - "traefik.http.routers.traefik-secure.tls=true"
+      - "traefik.http.routers.traefik-secure.tls.options=default"
+      - "traefik.http.routers.traefik-secure.tls.certresolver=mycert"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
