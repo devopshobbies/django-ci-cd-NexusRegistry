@@ -49,7 +49,7 @@ services:
       - "traefik.http.routers.traefik.rule=Host(`traefik.devopshobbies.com`)"
       - "traefik.http.routers.traefik.middlewares=https-redirect"
       - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.web-auth.basicauth.users=admin:{SHA}cQ4sq6qS1Y1OnD0mugO+z1j8KOE="
+      - "traefik.http.middlewares.web-auth.basicauth.users=user:$$apr1$$QpkypDvQ$$FjJgBGyX/By8agkOCUvDo."
       - "traefik.http.routers.traefik-secure.middlewares=web-auth"
       - "traefik.http.routers.traefik-secure.entrypoints=https"
       - "traefik.http.routers.traefik-secure.rule=Host(`traefik.devopshobbies.com`)"
