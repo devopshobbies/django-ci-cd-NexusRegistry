@@ -96,3 +96,15 @@ services:
      - "traefik.http.routers.nexusdocker-secure.service=nexusdocker-secure"
      - "traefik.http.services.nexusdocker-secure.loadbalancer.server.port=8085"
 
+     - "traefik.http.routers.nexusmirror.entrypoints=http"
+     - "traefik.http.routers.nexusmirror.rule=Host(`nexus.devopshobbies.com`)"
+     - "traefik.http.routers.nexusmirror.middlewares=https-redirect"
+     - "traefik.http.routers.nexusmirror.service=nexusmirror-secure"
+     - "traefik.http.routers.nexusmirror-secure.entrypoints=https"
+     - "traefik.http.routers.nexusmirror-secure.rule=Host(`nexus.devopshobbies.com`)"
+     - "traefik.http.routers.nexusmirror-secure.tls=true"
+     - "traefik.http.routers.nexusmirror-secure.tls.options=default"
+     - "traefik.http.routers.nexusmirror-secure.tls.certresolver=mycert"
+     - "traefik.http.routers.nexusmirror-secure.service=nexusmirror-secure"
+     - "traefik.http.services.nexusmirror-secure.loadbalancer.server.port=8084"
+
