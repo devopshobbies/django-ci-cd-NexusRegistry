@@ -6,7 +6,7 @@ MONTH=`date +%Y-%d`
 DAY=`date +%Y-%m-%d`
 NOW="$(date +"%Y-%m-%d_%H-%M-%S")"
 # Variable Section -------------------------------------------
-DOMAIN_NAME=devopshobbies.com
+DOMAIN_NAME=devopshobbieslearning.com
 HostName=$DOMAIN_NAME
 SSH_PORT=1242
 BAC_DIR=/opt/backup/files_$NOW
